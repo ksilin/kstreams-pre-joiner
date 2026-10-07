@@ -373,3 +373,7 @@ I checked these on 2026-10-06 as the newest stable releases:
 - Kafka Streams 4.2.1: managed by the Quarkus 3.40.1 BOM (`gradlew dependencies`). Maven Central has 4.3.1.
 - Gradle 9.8.0: `services.gradle.org/versions/current`.
 - Build image `eclipse-temurin:21-jdk`, run image `registry.access.redhat.com/ubi9/openjdk-21:1.23`: Red Hat registry tag list.
+
+## License
+
+Copyright 2026 Konstantin Silin. Licensed under the Apache License 2.0, see `LICENSE`.
