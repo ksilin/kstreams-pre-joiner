@@ -1,0 +1,43 @@
+# Pre-joiner: the child connector reads only children whose parent already exists in the target system.
+# Example topic names: an account is the parent, a balance is the child.
+app:
+  topic:
+    # Connect Reporter success topic of the parent connector (reporter.result.topic.name)
+    parent: financial-account-success
+    # Original child topic. Today the child connector reads it directly.
+    child: balances
+    # The child connector reads this topic instead
+    ready: balances-ready
+    # Children that waited longer than max-wait, or that have no parent ID
+    error: balances-errors
+    # Parent success records without a parent ID, for example because in-parent points to the wrong field
+    parent-error: financial-account-success-errors
+  parent-id:
+    # JSON pointer to the parent ID in the success record. Remove it to use the record key.
+    in-parent: /externalId
+    # JSON pointer to the parent ID in the child record. Remove it to use the record key.
+    in-child: /financialAccountId
+  max-wait: 1h
+  expiry-check-interval: 10s
+
+quarkus:
+  kafka-streams:
+    bootstrap-servers: localhost:9092
+    application-id: pre-joiner
+    # Quarkus waits until these topics exist before it starts the topology
+    topics: ${app.topic.parent},${app.topic.child},${app.topic.ready},${app.topic.error},${app.topic.parent-error}
+  log:
+    level: INFO
+    category:
+      "com.example":
+        level: DEBUG
+  shutdown:
+    timeout: 30s
+
+# Passed through to Kafka Streams
+kafka-streams:
+  processing:
+    guarantee: exactly_once_v2
+  commit:
+    interval:
+      ms: 1000
